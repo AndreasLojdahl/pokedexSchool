@@ -1,7 +1,9 @@
 package com.example.pokedex.controllers;
 
 import com.example.pokedex.dto.PokemonDto;
+import com.example.pokedex.entities.Pokemon;
 import com.example.pokedex.services.PokemonConsumerService;
+import com.example.pokedex.services.PokemonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,11 +18,11 @@ import java.util.List;
 public class PokemonController {
 
     @Autowired
-    private PokemonConsumerService pokemonConsumerService;
+    private PokemonService pokemonService;
 
     @GetMapping
-    public ResponseEntity<PokemonDto> findPokemons(@RequestParam String name){
-        var pokemons = pokemonConsumerService.search(name);
+    public ResponseEntity<List<Pokemon>> findPokemons(@RequestParam String name){
+        var pokemons = pokemonService.findPokemonByName(name);
         return ResponseEntity.ok(pokemons);
     }
 }

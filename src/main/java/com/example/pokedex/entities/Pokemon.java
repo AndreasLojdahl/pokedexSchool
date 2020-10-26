@@ -1,21 +1,34 @@
-package com.example.pokedex.dto;
+package com.example.pokedex.entities;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.data.annotation.Id;
 
-public class PokemonDto {
+import java.io.Serializable;
 
+public class Pokemon implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    private String id;
     private String name;
     private int height;
     private int weight;
 
-    public PokemonDto(){
+    public Pokemon(){
 
     }
 
-    public PokemonDto(String name, int height, int weight) {
+    public Pokemon(String name, int height, int weight) {
         this.name = name;
         this.height = height;
         this.weight = weight;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {
