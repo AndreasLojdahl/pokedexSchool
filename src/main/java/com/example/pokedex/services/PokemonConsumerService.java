@@ -17,7 +17,6 @@ public class PokemonConsumerService {
 
     private final RestTemplate restTemplate;
 
-    //@Value("example.pokemon.url")
     private String url;
 
     public PokemonConsumerService(RestTemplateBuilder restTemplateBuilder){
