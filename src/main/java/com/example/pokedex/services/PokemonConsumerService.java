@@ -1,6 +1,11 @@
 package com.example.pokedex.services;
 
 import com.example.pokedex.dto.PokemonDto;
+import com.example.pokedex.dto.HarvestPokemonResultsDto;
+import com.example.pokedex.entities.Pokemon;
+import com.example.pokedex.entities.PokemonName;
+import com.example.pokedex.repositories.PokemonNameRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -9,23 +14,28 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@ConfigurationProperties(value = "example.pokemon", ignoreUnknownFields = false)
+//@ConfigurationProperties(value = "example.pokemon", ignoreUnknownFields = false)
 public class PokemonConsumerService {
 
     private final RestTemplate restTemplate;
 
+    @Value("{example.pokemon.url}")
     private String url;
+
+    @Autowired
+    private PokemonNameRepository pokemonNameRepository;
 
     public PokemonConsumerService(RestTemplateBuilder restTemplateBuilder){
         this.restTemplate = restTemplateBuilder.build();
     }
 
     public PokemonDto search(String name){
-
-        var urlWithNameQuery = url + name;
+        this.getAllPokes();
+        var urlWithNameQuery = url + "/" + name;
         var pokemon = restTemplate.getForObject(urlWithNameQuery, PokemonDto.class);
 
         if(pokemon == null){
@@ -34,8 +44,10 @@ public class PokemonConsumerService {
         return pokemon;
     }
 
-    public List<PokemonDto> findAll(String name){
-        return null;
+    public void getAllPokes(){
+
+        var resultsDto = restTemplate.getForObject("https://pokeapi.co/api/v2/pokemon?limit=2000&offset=0", HarvestPokemonResultsDto.class);
+        resultsDto.getResults().forEach(res -> pokemonNameRepository.save(new PokemonName(res.getName())));
     }
 
     public void setUrl(String url){
