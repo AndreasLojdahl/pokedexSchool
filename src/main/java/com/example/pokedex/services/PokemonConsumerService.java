@@ -23,8 +23,8 @@ public class PokemonConsumerService {
 
     private final RestTemplate restTemplate;
 
-    @Value("{example.pokemon.url}")
-    private String url;
+    //@Value("{example.pokemon.url}")
+    private String url = "https://pokeapi.co/api/v2/pokemon";
 
     @Autowired
     private PokemonNameRepository pokemonNameRepository;
@@ -34,7 +34,7 @@ public class PokemonConsumerService {
     }
 
     public PokemonDto search(String name){
-        this.getAllPokes();
+
         var urlWithNameQuery = url + "/" + name;
         var pokemon = restTemplate.getForObject(urlWithNameQuery, PokemonDto.class);
 
@@ -44,11 +44,11 @@ public class PokemonConsumerService {
         return pokemon;
     }
 
-    public void getAllPokes(){
-
-        var resultsDto = restTemplate.getForObject("https://pokeapi.co/api/v2/pokemon?limit=2000&offset=0", HarvestPokemonResultsDto.class);
-        resultsDto.getResults().forEach(res -> pokemonNameRepository.save(new PokemonName(res.getName())));
-    }
+//    public void getAllPokes(){
+//
+//        var resultsDto = restTemplate.getForObject("https://pokeapi.co/api/v2/pokemon?limit=2000&offset=0", HarvestPokemonResultsDto.class);
+//        resultsDto.getResults().forEach(res -> pokemonNameRepository.save(new PokemonName(res.getName())));
+//    }
 
     public void setUrl(String url){
         this.url = url;

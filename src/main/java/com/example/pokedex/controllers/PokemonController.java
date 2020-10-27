@@ -22,12 +22,12 @@ public class PokemonController {
     @Autowired
     private PokemonConsumerService pokemonConsumerService;
 
-    @GetMapping("/test")
-    public void harvestPokemons(){
-        System.out.println("I harvest");
-        pokemonConsumerService.getAllPokes();
-
-    }
+//    @GetMapping("/test")
+//    public void harvestPokemons(){
+//        System.out.println("I harvest");
+//        pokemonConsumerService.getAllPokes();
+//
+//    }
 
     @GetMapping
     public ResponseEntity<List<Pokemon>> findPokemons(@RequestParam String name){

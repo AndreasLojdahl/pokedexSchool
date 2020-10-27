@@ -1,6 +1,8 @@
 package com.example.pokedex.services;
 
 import com.example.pokedex.entities.Pokemon;
+import com.example.pokedex.entities.PokemonName;
+import com.example.pokedex.repositories.PokemonNameRepository;
 import com.example.pokedex.repositories.PokemonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -20,22 +22,49 @@ public class PokemonService {
     private PokemonRepository pokemonRepository;
     @Autowired
     private PokemonConsumerService pokemonConsumerService;
+    @Autowired
+    private PokemonNameRepository pokemonNameRepository;
 
     @Cacheable(value = "pokedexCache", key ="#name")
     public List<Pokemon> findPokemonByName(String name){
-        var pokemons = pokemonRepository.findAll();
 
+        var pokemons = pokemonRepository.findAll();
         pokemons = pokemons.stream()
                 .filter(pokemon -> pokemon.getName().toLowerCase().contains(name.toLowerCase()))
                 .collect(Collectors.toList());
+        var pokemonNames = this.findPokemonNamesInDB(name);
+        System.out.println(pokemonNames.size()+ "name SSIIZZE");
+        if(pokemons.isEmpty() || pokemons.size() < pokemonNames.size()){
 
-        if(pokemons.isEmpty()){
-            System.out.println("Fetching data...");
-            var pokemonDto = pokemonConsumerService.search(name);
-            var pokemon = new Pokemon(pokemonDto.getName(),pokemonDto.getHeight(),pokemonDto.getWeight());
-            pokemons.add(this.save(pokemon));
+
+
+
+            List<Pokemon> finalPokemons = pokemons;
+            pokemonNames.forEach(pokemonName -> {
+                var pokemonDto = pokemonConsumerService.search(pokemonName.getName());
+                var pokemon = new Pokemon(pokemonDto.getName(), pokemonDto.getHeight(),pokemonDto.getWeight());
+                finalPokemons.add(this.save(pokemon));
+            });
+            return finalPokemons;
         }
         return pokemons;
+
+
+
+//        if(pokemons.isEmpty()){
+//            System.out.println("Fetching data...");
+//            var pokemonDto = pokemonConsumerService.search(name);
+//            var pokemon = new Pokemon(pokemonDto.getName(),pokemonDto.getHeight(),pokemonDto.getWeight());
+//            pokemons.add(this.save(pokemon));
+//        }
+//        return pokemons;
+    }
+
+    public List<PokemonName> findPokemonNamesInDB(String name){
+        var pokemonNames = pokemonNameRepository.findAll();
+        pokemonNames = pokemonNames.stream().filter(pokemonName -> pokemonName.getName().toLowerCase().contains(name.toLowerCase()))
+                .collect(Collectors.toList());
+        return pokemonNames;
     }
 
     public Pokemon findPokemonById(String id){

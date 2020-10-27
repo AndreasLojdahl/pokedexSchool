@@ -1,6 +1,7 @@
 package com.example.pokedex.entities;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 
 import java.io.Serializable;
 
@@ -9,6 +10,7 @@ public class Pokemon implements Serializable {
 
     @Id
     private String id;
+    @Indexed(unique = true)
     private String name;
     private int height;
     private int weight;
