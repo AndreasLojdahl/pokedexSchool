@@ -8,11 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,40 +28,57 @@ public class PokemonService {
     private PokemonConsumerService pokemonConsumerService;
     @Autowired
     private PokemonNameRepository pokemonNameRepository;
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
-    @Cacheable(value = "pokedexCache", key ="#name")
-    public List<Pokemon> findPokemonByName(String name){
+    //@Cacheable(value = "pokedexCache", key = "#name")
+    public List<Pokemon> findPokemons(Map<String, Object> params){
 
-        var pokemons = pokemonRepository.findAll();
-        pokemons = pokemons.stream()
-                .filter(pokemon -> pokemon.getName().toLowerCase().contains(name.toLowerCase()))
-                .collect(Collectors.toList());
-        var pokemonNames = this.findPokemonNamesInDB(name);
-        System.out.println(pokemonNames.size()+ "name SSIIZZE");
-        if(pokemons.isEmpty() || pokemons.size() < pokemonNames.size()){
+        if(!params.isEmpty()){
 
+        Query query = new Query();
 
+        params.forEach((key, value) -> {
 
+            if(key.equals("name")){
 
-            List<Pokemon> finalPokemons = pokemons;
-            pokemonNames.forEach(pokemonName -> {
-                var pokemonDto = pokemonConsumerService.search(pokemonName.getName());
-                var pokemon = new Pokemon(pokemonDto.getName(), pokemonDto.getHeight(),pokemonDto.getWeight());
-                finalPokemons.add(this.save(pokemon));
-            });
-            return finalPokemons;
-        }
+                var pokemons = this.filterPokemonsByNameInDB(value.toString());
+                var pokemonNames = this.findPokemonNamesInDB(value.toString());
+                System.out.println(pokemonNames.size() + "size");
+                if(pokemons.size() < pokemonNames.size()){
+
+                    pokemonNames.forEach(pokemonName -> {
+                        var pokemonAlreadyExist = pokemonRepository.findByName(pokemonName.getName());
+                        if(pokemonAlreadyExist.isEmpty()){
+                            var pokemonDto = pokemonConsumerService.search(pokemonName.getName());
+                            var pokemon = new Pokemon(pokemonDto.getName(), pokemonDto.getHeight(),pokemonDto.getWeight());
+                            this.save(pokemon);
+                        }
+                    });
+                }
+            }
+        });
+
+        params.forEach((key, value) -> {
+
+            if(key.equals("name")){
+                // need to fix partial string search
+                query.addCriteria(Criteria.where(key).regex(value.toString()));
+            }else if(key.equals("weight") || key.equals("height")){
+                query.addCriteria(Criteria.where(key).is(Integer.parseInt(value.toString())));
+            }else{
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,String.format("key %s is not a valid parameter",key));
+            }
+
+        });
+        List<Pokemon> pokemons = mongoTemplate.find(query, Pokemon.class);
         return pokemons;
 
+        }else{
+            var pokemons = pokemonRepository.findAll();
+            return pokemons;
+        }
 
-
-//        if(pokemons.isEmpty()){
-//            System.out.println("Fetching data...");
-//            var pokemonDto = pokemonConsumerService.search(name);
-//            var pokemon = new Pokemon(pokemonDto.getName(),pokemonDto.getHeight(),pokemonDto.getWeight());
-//            pokemons.add(this.save(pokemon));
-//        }
-//        return pokemons;
     }
 
     public List<PokemonName> findPokemonNamesInDB(String name){
@@ -65,6 +86,12 @@ public class PokemonService {
         pokemonNames = pokemonNames.stream().filter(pokemonName -> pokemonName.getName().toLowerCase().contains(name.toLowerCase()))
                 .collect(Collectors.toList());
         return pokemonNames;
+    }
+    public List<Pokemon> filterPokemonsByNameInDB(String name){
+        var pokemons = pokemonRepository.findAll();
+        pokemons = pokemons.stream().filter(pokemon -> pokemon.getName().toLowerCase().contains(name.toLowerCase()))
+                .collect(Collectors.toList());
+        return pokemons;
     }
 
     public Pokemon findPokemonById(String id){

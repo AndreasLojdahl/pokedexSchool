@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/pokemon")
@@ -30,8 +31,8 @@ public class PokemonController {
 //    }
 
     @GetMapping
-    public ResponseEntity<List<Pokemon>> findPokemons(@RequestParam String name){
-        var pokemons = pokemonService.findPokemonByName(name);
+    public ResponseEntity<List<Pokemon>> findPokemons(@RequestParam Map<String, Object> params){
+        var pokemons = pokemonService.findPokemons(params);
         return ResponseEntity.ok(pokemons);
     }
 }
