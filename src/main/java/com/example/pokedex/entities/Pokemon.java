@@ -10,7 +10,6 @@ public class Pokemon implements Serializable {
 
     @Id
     private String id;
-    @Indexed(unique = true)
     private String name;
     private int height;
     private int weight;

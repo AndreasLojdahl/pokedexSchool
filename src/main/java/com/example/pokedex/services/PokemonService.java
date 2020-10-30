@@ -7,11 +7,11 @@ import com.example.pokedex.repositories.PokemonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -32,26 +32,61 @@ public class PokemonService {
     private MongoTemplate mongoTemplate;
 
     //@Cacheable(value = "pokedexCache", key = "#name")
-    public List<Pokemon> findPokemons(Map<String, Object> params){
+    public List<Pokemon> findPokemons(Map<String, Object> params) {
 
-        if(!params.isEmpty()){
+        if (!params.isEmpty()) {
+
+            this.fetchPokemonsFromPokeApi(params);
+
+            var query = this.getQueryFromParams(params);
+
+            List<Pokemon> pokemons = mongoTemplate.find(query, Pokemon.class);
+            return pokemons;
+
+        } else {
+            var pokemons = pokemonRepository.findAll();
+            return pokemons;
+        }
+
+    }
+
+    private Query getQueryFromParams(Map<String, Object> params) {
 
         Query query = new Query();
+        params.forEach((key, value) -> {
+
+            if (key.equals("name")) {
+                query.addCriteria(Criteria.where(key).regex(value.toString()));
+            } else if (key.equals("weight") || key.equals("height")) {
+                query.addCriteria(Criteria.where(key).is(Integer.parseInt(value.toString())));
+            } else {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("key %s is not a valid parameter", key));
+            }
+
+        });
+        return query;
+    }
+
+    private void fetchPokemonsFromPokeApi(Map<String, Object> params) {
 
         params.forEach((key, value) -> {
 
-            if(key.equals("name")){
+            if (key.equals("name")) {
+
+                if (value.toString().toCharArray().length < 3) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("value %s is too short", value));
+                }
 
                 var pokemons = this.filterPokemonsByNameInDB(value.toString());
                 var pokemonNames = this.findPokemonNamesInDB(value.toString());
-                System.out.println(pokemonNames.size() + "size");
-                if(pokemons.size() < pokemonNames.size()){
+
+                if (pokemons.size() < pokemonNames.size()) {
 
                     pokemonNames.forEach(pokemonName -> {
                         var pokemonAlreadyExist = pokemonRepository.findByName(pokemonName.getName());
-                        if(pokemonAlreadyExist.isEmpty()){
+                        if (pokemonAlreadyExist.isEmpty()) {
                             var pokemonDto = pokemonConsumerService.search(pokemonName.getName());
-                            var pokemon = new Pokemon(pokemonDto.getName(), pokemonDto.getHeight(),pokemonDto.getWeight());
+                            var pokemon = new Pokemon(pokemonDto.getName(), pokemonDto.getHeight(), pokemonDto.getWeight());
                             this.save(pokemon);
                         }
                     });
@@ -59,49 +94,34 @@ public class PokemonService {
             }
         });
 
-        params.forEach((key, value) -> {
-
-            if(key.equals("name")){
-                // need to fix partial string search
-                query.addCriteria(Criteria.where(key).regex(value.toString()));
-            }else if(key.equals("weight") || key.equals("height")){
-                query.addCriteria(Criteria.where(key).is(Integer.parseInt(value.toString())));
-            }else{
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,String.format("key %s is not a valid parameter",key));
-            }
-
-        });
-        List<Pokemon> pokemons = mongoTemplate.find(query, Pokemon.class);
-        return pokemons;
-
-        }else{
-            var pokemons = pokemonRepository.findAll();
-            return pokemons;
-        }
-
     }
 
-    public List<PokemonName> findPokemonNamesInDB(String name){
+
+    public List<PokemonName> findPokemonNamesInDB(String name) {
         var pokemonNames = pokemonNameRepository.findAll();
-        pokemonNames = pokemonNames.stream().filter(pokemonName -> pokemonName.getName().toLowerCase().contains(name.toLowerCase()))
+        pokemonNames = pokemonNames.stream().filter(pokemonName -> pokemonName.getName()
+                .toLowerCase().contains(name.toLowerCase()))
                 .collect(Collectors.toList());
         return pokemonNames;
     }
-    public List<Pokemon> filterPokemonsByNameInDB(String name){
+
+    public List<Pokemon> filterPokemonsByNameInDB(String name) {
         var pokemons = pokemonRepository.findAll();
-        pokemons = pokemons.stream().filter(pokemon -> pokemon.getName().toLowerCase().contains(name.toLowerCase()))
+        pokemons = pokemons.stream().filter(pokemon -> pokemon.getName()
+                .toLowerCase().contains(name.toLowerCase()))
                 .collect(Collectors.toList());
         return pokemons;
     }
 
-    public Pokemon findPokemonById(String id){
+    public Pokemon findPokemonById(String id) {
         return pokemonRepository.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Couldn't find pokemon"));
     }
 
-    @CachePut(value = "pokedexCache", key = "id")
-    public void update(String id, Pokemon pokemon){
-        if(!pokemonRepository.existsById(id)){
+    //@CachePut(value = "pokedexCache", key = "id")
+
+    public void update(String id, Pokemon pokemon) {
+        if (!pokemonRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Couldn't find pokemon");
         }
         pokemon.setId(id);
@@ -114,8 +134,8 @@ public class PokemonService {
     }
 
     @CacheEvict(value = "pokedexCache", allEntries = true)
-    public void delete(String id){
-        if(!pokemonRepository.existsById(id)){
+    public void delete(String id) {
+        if (!pokemonRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Couldn't find pokemon");
         }
         pokemonRepository.deleteById(id);

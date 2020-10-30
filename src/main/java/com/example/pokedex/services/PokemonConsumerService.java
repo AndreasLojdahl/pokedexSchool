@@ -23,8 +23,8 @@ public class PokemonConsumerService {
 
     private final RestTemplate restTemplate;
 
-    //@Value("{example.pokemon.url}")
-    private String url = "https://pokeapi.co/api/v2/pokemon";
+    @Value("${example.pokemon.url}")
+    private String url;
 
     @Autowired
     private PokemonNameRepository pokemonNameRepository;
