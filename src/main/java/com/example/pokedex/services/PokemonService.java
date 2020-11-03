@@ -59,7 +59,10 @@ public class PokemonService {
                 query.addCriteria(Criteria.where(key).regex(value.toString()));
             } else if (key.equals("weight") || key.equals("height")) {
                 query.addCriteria(Criteria.where(key).is(Integer.parseInt(value.toString())));
-            } else {
+            }else if(key.equals("kiss")){
+                query.addCriteria(Criteria.where(key).is(Integer.parseInt(value.toString())));
+            }
+             else {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("key %s is not a valid parameter", key));
             }
 

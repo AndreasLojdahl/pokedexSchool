@@ -25,6 +25,21 @@
 			<artifactId>spring-boot-starter-data-mongodb</artifactId>
 		</dependency>
 
+		<!-- OpenAPi Doc-->
+
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-ui</artifactId>
+			<version>1.2.32</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-data-rest</artifactId>
+			<version>1.2.32</version>
+		</dependency>
+		<!-- OpenAPi Doc-->
+
 		<!--<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-redis</artifactId>
@@ -47,6 +62,7 @@
 		</dependency>
 
 		<!-- cache above -->
+
 		<!-- SECURITY-->
 
 		<dependency>
