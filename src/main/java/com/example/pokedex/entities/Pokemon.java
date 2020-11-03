@@ -1,8 +1,9 @@
 package com.example.pokedex.entities;
 
+import com.sun.istack.NotNull;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
-
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 public class Pokemon implements Serializable {
@@ -10,8 +11,11 @@ public class Pokemon implements Serializable {
 
     @Id
     private String id;
+    @NotBlank
     private String name;
+    @Min(1)
     private int height;
+    @Min(1)
     private int weight;
 
     public Pokemon(){
@@ -19,7 +23,7 @@ public class Pokemon implements Serializable {
     }
 
     public Pokemon(String name, int height, int weight) {
-        this.name = name;
+        this.name = name.toLowerCase();
         this.height = height;
         this.weight = weight;
     }
@@ -37,7 +41,7 @@ public class Pokemon implements Serializable {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = name.toLowerCase();
     }
 
     public int getHeight() {

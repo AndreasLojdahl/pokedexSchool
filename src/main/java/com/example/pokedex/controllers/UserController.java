@@ -19,7 +19,7 @@ public class UserController {
     UserService userService;
 
     @GetMapping
-    @Secured("ROLE_USER")
+    @Secured({"ROLE_USER", "ROLE_ADMIN"})
     public ResponseEntity<List<User>> findAllUsers(@RequestParam(required = false) String username) {
         var users = userService.findAll(username);
         return ResponseEntity.ok(users);
@@ -37,7 +37,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    @Secured("ROLE_ADMIN")
+    @Secured({"ROLE_ADMIN","ROLE_USER"})
     public void updateUser(@PathVariable String id, @Validated @RequestBody User user) {
         userService.update(id, user);
     }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sun.istack.NotNull;
 import org.springframework.data.annotation.Id;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.List;
@@ -13,11 +14,11 @@ public class User {
 
     @Id
     private String id;
-    @NotNull
+    @NotBlank
     private String name;
-    @NotEmpty
+    @NotBlank
     private String username;
-    @NotEmpty
+    @NotBlank
     @Size(min = 6, max = 12)
     private String password;
     private List<String> roles;

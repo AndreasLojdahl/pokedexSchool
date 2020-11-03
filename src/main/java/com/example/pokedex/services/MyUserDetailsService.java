@@ -35,10 +35,7 @@ public class MyUserDetailsService implements UserDetailsService {
                 .collect(Collectors.toList());
     }
 
-    //  https://java19l.lms.nodehill.se/article/inlamningsuppgift-restful-pokedex se Get session user.
     public String getCurrentUser() {
-        // the login session is stored between page reloads,
-        // and we can access the current authenticated User with this
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 }

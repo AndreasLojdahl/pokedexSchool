@@ -11,6 +11,6 @@ public class RestErrorHandler {
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<String> handleNotFound(ResponseStatusException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Sorry can't find that..");
+        return ResponseEntity.status(e.getStatus()).body(e.getReason());
     }
 }

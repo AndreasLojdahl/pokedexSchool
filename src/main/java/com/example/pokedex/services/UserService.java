@@ -20,6 +20,8 @@ public class UserService {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @Autowired
+    MyUserDetailsService myUserDetailsService;
 
 
     public List<User> findAll(String username){
@@ -46,12 +48,19 @@ public class UserService {
     }
 
     public void update(String id, User user){
+        var currentUser = findByUsername(myUserDetailsService.getCurrentUser());
+        System.out.println(currentUser.getUsername());
         if(!userRepository.existsById(id)){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Could not find the user id %s", id));
         }
-        user.setId(id);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+
+        if(isAuthenticatedToUpdate(currentUser, id)){
+            user.setId(id);
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            userRepository.save(user);
+        }else{
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not Authorized to update this user");
+        }
     }
 
     public void delete(String id){
@@ -59,5 +68,9 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Could not find the user id %s", id));
         }
         userRepository.deleteById(id);
+    }
+
+    public Boolean isAuthenticatedToUpdate (User currentUser, String id) {
+        return (currentUser.getId().equals(id) || currentUser.getRoles().contains("ADMIN"));
     }
 }
