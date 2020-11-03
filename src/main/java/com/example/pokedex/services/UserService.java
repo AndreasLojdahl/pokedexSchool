@@ -59,7 +59,7 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             userRepository.save(user);
         }else{
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not Authorized to update this user");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not Authorized to update this user");
         }
     }
 
