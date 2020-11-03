@@ -1,6 +1,5 @@
 package com.example.pokedex.config;
 
-
 import org.ehcache.event.CacheEvent;
 import org.ehcache.event.CacheEventListener;
 import org.slf4j.Logger;

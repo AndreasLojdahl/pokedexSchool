@@ -19,7 +19,6 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-
     @Autowired
     AuthenticationEntryPoint entryPoint;
 
@@ -38,13 +37,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin().disable()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.GET,"/api/v1/pokemon/").permitAll()
-                .antMatchers("/api/v1/").authenticated()
+                .antMatchers("/api/v1/users").authenticated()
                 .and()
                 .httpBasic().authenticationEntryPoint(entryPoint)
                 .and()
                 .logout(l -> l.logoutSuccessUrl("/"));
     }
-
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();

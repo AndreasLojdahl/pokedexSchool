@@ -5,26 +5,20 @@ import com.example.pokedex.entities.Pokemon;
 import com.example.pokedex.services.PokemonConsumerService;
 import com.example.pokedex.services.PokemonService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api/v1/pokemon")
@@ -43,7 +37,7 @@ public class PokemonController {
 //    }
 
     @GetMapping
-    @Operation(summary = "Find a pokemon or get all pokemons")
+    @Operation(summary = "Find a pokémon or get all pokémons")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the pokémon/pokémons",
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = Pokemon.class)) }),
@@ -60,7 +54,7 @@ public class PokemonController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Find a pokémon with a specific id")
+    @Operation(summary = "Find a specific pokémon")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the pokémon",
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = Pokemon.class)) }),
@@ -88,8 +82,7 @@ public class PokemonController {
     @Secured("ROLE_ADMIN")
     @Operation(summary = "Updates a pokémon")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Updated pokémon",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = Pokemon.class)) }),
+            @ApiResponse(responseCode = "204", description = "Updated pokémon"),
             @ApiResponse(responseCode = "401", description = "Full authentication is required", content = @Content),
             @ApiResponse(responseCode = "400", description = "Invalid request body", content = @Content)
     })
@@ -102,8 +95,7 @@ public class PokemonController {
     @Secured("ROLE_ADMIN")
     @Operation(summary = "Deletes a pokémon")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Deleted pokémon",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = Pokemon.class)) }),
+            @ApiResponse(responseCode = "204", description = "Deleted pokémon"),
             @ApiResponse(responseCode = "404", description = "Couldn't find pokemon", content = @Content)
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
