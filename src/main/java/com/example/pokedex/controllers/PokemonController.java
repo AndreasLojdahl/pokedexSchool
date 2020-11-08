@@ -29,13 +29,13 @@ public class PokemonController {
     private PokemonConsumerService pokemonConsumerService;
 
     @GetMapping
-    @Operation(summary = "Find a pokémon or get all pokémons")
+    @Operation(summary = "Find a pokemon or get all pokemon")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Found the pokémon/pokémons",
+            @ApiResponse(responseCode = "200", description = "Found the pokemon/pokemon",
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = Pokemon.class)) }),
             @ApiResponse(responseCode = "400", description = "Invalid parameters", content = @Content)
     })
-    public ResponseEntity<List<Pokemon>> findPokemons(
+    public ResponseEntity<List<Pokemon>> findPokemon(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Integer minHeight,
             @RequestParam(required = false) Integer maxHeight,
@@ -43,16 +43,16 @@ public class PokemonController {
             @RequestParam(required = false) Integer maxWeight,
             @RequestParam(required = false) String ability,
             @RequestParam(required = false) String type){
-        var pokemons = pokemonService.findPokemons(name,minHeight,maxHeight,minWeight,maxWeight, ability, type);
+        var pokemons = pokemonService.findPokemon(name,minHeight,maxHeight,minWeight,maxWeight, ability, type);
         return ResponseEntity.ok(pokemons);
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Find a specific pokémon.")
+    @Operation(summary = "Find a specific pokemon.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Found the pokémon.",
+            @ApiResponse(responseCode = "200", description = "Found the pokemon.",
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = Pokemon.class)) }),
-            @ApiResponse(responseCode = "404", description = "Couldn't find pokémon.", content = @Content)
+            @ApiResponse(responseCode = "404", description = "Couldn't find pokemon.", content = @Content)
     })
     public ResponseEntity<Pokemon> findPokemonById(@PathVariable String id){
         return ResponseEntity.ok(pokemonService.findPokemonById(id));
@@ -60,9 +60,9 @@ public class PokemonController {
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Secured("ROLE_ADMIN")
-    @Operation(summary = "Creates a pokémon.")
+    @Operation(summary = "Creates a pokemon.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "created a pokémon.",
+            @ApiResponse(responseCode = "201", description = "created a pokemon.",
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = Pokemon.class)) }),
             @ApiResponse(responseCode = "400", description = "Invalid request body.", content = @Content),
             @ApiResponse(responseCode = "401", description = "Authentication is required.", content = @Content),
@@ -78,7 +78,7 @@ public class PokemonController {
     @Secured("ROLE_ADMIN")
     @Operation(summary = "Updates a pokémon.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Updated pokémon."),
+            @ApiResponse(responseCode = "204", description = "Updated pokemon."),
             @ApiResponse(responseCode = "401", description = "Authentication is required.", content = @Content),
             @ApiResponse(responseCode = "403", description = "Admin authentication is required", content = @Content),
             @ApiResponse(responseCode = "400", description = "Invalid request body.", content = @Content)
@@ -90,12 +90,12 @@ public class PokemonController {
 
     @DeleteMapping("/{id}")
     @Secured("ROLE_ADMIN")
-    @Operation(summary = "Deletes a pokémon.")
+    @Operation(summary = "Deletes a pokemon.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Deleted pokémon."),
+            @ApiResponse(responseCode = "204", description = "Deleted pokemon."),
             @ApiResponse(responseCode = "401", description = "Authentication is required.", content = @Content),
             @ApiResponse(responseCode = "403", description = "Admin authentication is required", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Couldn't find pokémon.", content = @Content)
+            @ApiResponse(responseCode = "404", description = "Couldn't find pokemon.", content = @Content)
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePokemon(@PathVariable String id){

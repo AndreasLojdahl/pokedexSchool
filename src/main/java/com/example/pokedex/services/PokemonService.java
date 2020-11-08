@@ -30,12 +30,12 @@ public class PokemonService {
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    public List<Pokemon> findPokemons(String name, Integer minHeight, Integer maxHeight, Integer minWeight, Integer maxWeight, String ability, String type) {
+    public List<Pokemon> findPokemon(String name, Integer minHeight, Integer maxHeight, Integer minWeight, Integer maxWeight, String ability, String type) {
 
         Query query = new Query();
 
         if(name != null && !name.isEmpty()) {
-            this.fetchPokemonsFromPokeApi(name);
+            this.fetchPokemonFromPokeApi(name);
             query.addCriteria(Criteria.where("name").regex(name.toLowerCase()));
         }
         if(maxHeight != null || minHeight != null){
@@ -53,8 +53,8 @@ public class PokemonService {
             query.addCriteria(Criteria.where("types.name").regex(type.toLowerCase()));
         }
 
-        List<Pokemon> pokemons = mongoTemplate.find(query, Pokemon.class);
-        return pokemons;
+         return mongoTemplate.find(query, Pokemon.class);
+
     }
 
     private Criteria getCriteriaForQueryFromParams(String param, Integer min, Integer max ) {
@@ -68,14 +68,14 @@ public class PokemonService {
         }
     }
 
-    private void fetchPokemonsFromPokeApi(String name) {
+    private void fetchPokemonFromPokeApi(String name) {
 
         checkIfValueIsTooShort(name);
 
-        var pokemons = this.filterPokemonsByNameInDB(name);
+        var pokemonList = this.filterPokemonByNameInDB(name);
         var pokemonNames = this.findPokemonNamesInDB(name);
 
-        if (pokemons.size() < pokemonNames.size()) {
+        if (pokemonList.size() < pokemonNames.size()) {
 
             pokemonNames.forEach(pokemonName -> {
                 var pokemonAlreadyExist = pokemonRepository.findByName(pokemonName.getName());
@@ -92,7 +92,7 @@ public class PokemonService {
                     this.save(pokemon);
                 }
             });
-        };
+        }
     }
 
     public void checkIfValueIsTooShort(String value){
@@ -109,12 +109,12 @@ public class PokemonService {
         return pokemonNames;
     }
 
-    public List<Pokemon> filterPokemonsByNameInDB(String name) {
-        var pokemons = pokemonRepository.findAll();
-        pokemons = pokemons.stream().filter(pokemon -> pokemon.getName()
+    public List<Pokemon> filterPokemonByNameInDB(String name) {
+        var pokemonList = pokemonRepository.findAll();
+        pokemonList = pokemonList.stream().filter(pokemon -> pokemon.getName()
                 .toLowerCase().contains(name.toLowerCase()))
                 .collect(Collectors.toList());
-        return pokemons;
+        return pokemonList;
     }
 
     public Pokemon findPokemonById(String id) {
