@@ -41,8 +41,8 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found users",
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = User.class)) }),
-            @ApiResponse(responseCode = "404", description = "Couldn't find user", content = @Content),
             @ApiResponse(responseCode = "401", description = "User authentication is required", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Couldn't find user", content = @Content),
     })
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     public ResponseEntity<User> findUserById(@PathVariable String id) {
@@ -66,7 +66,8 @@ public class UserController {
             @ApiResponse(responseCode = "204", description = "Updated user",
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = User.class)) }),
             @ApiResponse(responseCode = "400", description = "Invalid request body", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Admin Authentication is required or Log specified user", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Authentication is required", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Admin authentication is required or Log specified user", content = @Content),
             @ApiResponse(responseCode = "404", description = "Couldn't find user", content = @Content)
     })
     @Secured({"ROLE_ADMIN","ROLE_USER"})
@@ -79,8 +80,10 @@ public class UserController {
     @Operation(summary = "Delete user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Deleted user", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Admin authentication is required", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Authentication is required", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Admin authentication is required", content = @Content),
             @ApiResponse(responseCode = "404", description = "Couldn't find user", content = @Content)
+
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Secured("ROLE_ADMIN")

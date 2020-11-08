@@ -26,7 +26,6 @@
 		</dependency>
 
 		<!-- OpenAPi Doc-->
-
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-ui</artifactId>
@@ -38,33 +37,9 @@
 			<artifactId>springdoc-openapi-data-rest</artifactId>
 			<version>1.2.32</version>
 		</dependency>
-		<!-- OpenAPi Doc-->
-
-		<!--<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-redis</artifactId>
-		</dependency>-->
-
-		<!-- Cache -->
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-cache</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>javax.cache</groupId>
-			<artifactId>cache-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.ehcache</groupId>
-			<artifactId>ehcache</artifactId>
-			<version>3.7.1</version>
-		</dependency>
-
-		<!-- cache above -->
+		<!-- OpenAPi Doc Above-->
 
 		<!-- SECURITY-->
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
@@ -81,7 +56,6 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 		<!-- SECURITY above-->
 
 		<dependency>

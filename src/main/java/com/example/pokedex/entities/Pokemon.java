@@ -1,10 +1,10 @@
 package com.example.pokedex.entities;
 
-import com.sun.istack.NotNull;
 import org.springframework.data.annotation.Id;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
+import java.util.List;
 
 public class Pokemon implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -17,15 +17,19 @@ public class Pokemon implements Serializable {
     private int height;
     @Min(1)
     private int weight;
+    private List<Ability> abilities;
+    private List<Type> types;
 
     public Pokemon(){
 
     }
 
-    public Pokemon(String name, int height, int weight) {
+    public Pokemon(String name, int height, int weight, List<Ability> abilities, List<Type> types) {
         this.name = name.toLowerCase();
         this.height = height;
         this.weight = weight;
+        this.abilities = abilities;
+        this.types = types;
     }
 
     public String getId() {
@@ -58,5 +62,21 @@ public class Pokemon implements Serializable {
 
     public void setWeight(int weight) {
         this.weight = weight;
+    }
+
+    public List<Ability> getAbilities() {
+        return abilities;
+    }
+
+    public void setAbilities(List<Ability> abilities) {
+        this.abilities = abilities;
+    }
+
+    public List<Type> getTypes() {
+        return types;
+    }
+
+    public void setTypes(List<Type> types) {
+        this.types = types;
     }
 }

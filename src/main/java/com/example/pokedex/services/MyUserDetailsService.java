@@ -31,10 +31,9 @@ public class MyUserDetailsService implements UserDetailsService {
 
     private Collection<GrantedAuthority> getGrantedAuthorities(User user) {
         return user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role)) // ROLE_ADMIN -> ADMIN
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                 .collect(Collectors.toList());
     }
-
     public String getCurrentUser() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }

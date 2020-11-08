@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sun.istack.NotNull;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -16,6 +17,7 @@ public class User {
     private String id;
     @NotBlank
     private String name;
+    @Indexed(unique = true)
     @NotBlank
     private String username;
     @NotBlank

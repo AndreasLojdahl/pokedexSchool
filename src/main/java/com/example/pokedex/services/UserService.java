@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.dao.DuplicateKeyException;
 
 import java.util.List;
 
@@ -40,11 +41,17 @@ public class UserService {
         return userRepository.findByUsername(username).orElseThrow(RuntimeException::new);
     }
     public User save(User user){
+
         if(StringUtils.isEmpty(user.getPassword())){
             throw new ResponseStatusException(HttpStatus.I_AM_A_TEAPOT, "I need a password");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+
+        try{
+            return userRepository.save(user);
+        }catch (DuplicateKeyException error){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Username %s already exists", user.getUsername()));
+        }
     }
 
     public void update(String id, User user){
@@ -59,7 +66,7 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             userRepository.save(user);
         }else{
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not Authorized to update this user");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not Authorized to update this user");
         }
     }
 

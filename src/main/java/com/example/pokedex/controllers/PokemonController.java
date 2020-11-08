@@ -1,6 +1,5 @@
 package com.example.pokedex.controllers;
 
-import com.example.pokedex.dto.PokemonDto;
 import com.example.pokedex.entities.Pokemon;
 import com.example.pokedex.services.PokemonConsumerService;
 import com.example.pokedex.services.PokemonService;
@@ -29,13 +28,6 @@ public class PokemonController {
     @Autowired
     private PokemonConsumerService pokemonConsumerService;
 
-    //collects all pokemonnames to DB
-//    @GetMapping("/test")
-//    public void harvestPokemons(){
-//        System.out.println("I harvest");
-//        pokemonConsumerService.getAllPokes();
-//    }
-
     @GetMapping
     @Operation(summary = "Find a pokémon or get all pokémons")
     @ApiResponses(value = {
@@ -48,8 +40,10 @@ public class PokemonController {
             @RequestParam(required = false) Integer minHeight,
             @RequestParam(required = false) Integer maxHeight,
             @RequestParam(required = false) Integer minWeight,
-            @RequestParam(required = false) Integer maxWeight) {
-        var pokemons = pokemonService.findPokemons(name,minHeight,maxHeight,minWeight,maxWeight);
+            @RequestParam(required = false) Integer maxWeight,
+            @RequestParam(required = false) String ability,
+            @RequestParam(required = false) String type){
+        var pokemons = pokemonService.findPokemons(name,minHeight,maxHeight,minWeight,maxWeight, ability, type);
         return ResponseEntity.ok(pokemons);
     }
 
@@ -70,8 +64,9 @@ public class PokemonController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "created a pokémon.",
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = Pokemon.class)) }),
-            @ApiResponse(responseCode = "401", description = "Admin authentication is required.", content = @Content),
-            @ApiResponse(responseCode = "400", description = "Invalid request body.", content = @Content)
+            @ApiResponse(responseCode = "400", description = "Invalid request body.", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Authentication is required.", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Admin authentication is required", content = @Content),
     })
     public ResponseEntity<Pokemon> savePokemon(@Validated @RequestBody Pokemon pokemon){
         var savePokemon = pokemonService.save(pokemon);
@@ -84,7 +79,8 @@ public class PokemonController {
     @Operation(summary = "Updates a pokémon.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Updated pokémon."),
-            @ApiResponse(responseCode = "401", description = "Admin authentication is required.", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Authentication is required.", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Admin authentication is required", content = @Content),
             @ApiResponse(responseCode = "400", description = "Invalid request body.", content = @Content)
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -97,7 +93,8 @@ public class PokemonController {
     @Operation(summary = "Deletes a pokémon.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Deleted pokémon."),
-            @ApiResponse(responseCode = "401", description = "Admin authentication is required.", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Authentication is required.", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Admin authentication is required", content = @Content),
             @ApiResponse(responseCode = "404", description = "Couldn't find pokémon.", content = @Content)
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -105,5 +102,11 @@ public class PokemonController {
         pokemonService.delete(id);
     }
 
+    // ** collects all pokemonNames to DB **
 
+//    @GetMapping("/test")
+//    public void harvestPokemons(){
+//        System.out.println("I harvest");
+//        pokemonConsumerService.getAllPokes();
+//    }
 }

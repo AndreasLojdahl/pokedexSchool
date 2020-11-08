@@ -1,24 +1,16 @@
 package com.example.pokedex.services;
 
 import com.example.pokedex.dto.PokemonDto;
-import com.example.pokedex.dto.HarvestPokemonResultsDto;
-import com.example.pokedex.entities.Pokemon;
-import com.example.pokedex.entities.PokemonName;
 import com.example.pokedex.repositories.PokemonNameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Service
-//@ConfigurationProperties(value = "example.pokemon", ignoreUnknownFields = false)
 public class PokemonConsumerService {
 
     private final RestTemplate restTemplate;
@@ -44,6 +36,7 @@ public class PokemonConsumerService {
         return pokemon;
     }
 
+// ** USED FOR GETTING ALL POKEMONNAMES IN DB **
 //    public void getAllPokes(){
 //
 //        var resultsDto = restTemplate.getForObject("https://pokeapi.co/api/v2/pokemon?limit=2000&offset=0", HarvestPokemonResultsDto.class);
